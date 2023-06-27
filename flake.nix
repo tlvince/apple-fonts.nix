@@ -33,69 +33,33 @@
             hash = "sha256-XOiWc4c7Yah+mM7axk8g1gY12vXamQF78Keqd3/0/cE=";
           };
 
-          unpackPhase = pkgName: ''
-            undmg $src
-            7z x '${pkgName}'
-            7z x 'Payload~'
-          '';
-          commonInstall = ''
-            mkdir -p $out/share/fonts
-            mkdir -p $out/share/fonts/opentype
-            mkdir -p $out/share/fonts/truetype
-          '';
-          commonBuildInputs = with pkgs; [undmg p7zip];
-          makeAppleFont = name: pkgName: src:
+          makeAppleFont = pname: pkgName: src:
             pkgs.stdenv.mkDerivation {
-              inherit name src version;
+              inherit pname src version;
 
-              unpackPhase = unpackPhase pkgName;
-
-              buildInputs = commonBuildInputs;
-              setSourceRoot = "sourceRoot=`pwd`";
-
-              installPhase =
-                commonInstall
-                + ''
-                  find -name \*.otf -exec mv {} $out/share/fonts/opentype/ \;
-                  find -name \*.ttf -exec mv {} $out/share/fonts/truetype/ \;
-                '';
-            };
-          makeNerdAppleFont = name: pkgName: src:
-            pkgs.stdenv.mkDerivation {
-              inherit name src;
-
-              unpackPhase = unpackPhase pkgName;
-
-              buildInputs = with pkgs;
-                commonBuildInputs ++ [parallel nerd-font-patcher];
-              setSourceRoot = "sourceRoot=`pwd`";
-
-              buildPhase = ''
-                find -name \*.ttf -o -name \*.otf -print0 | parallel -j $NIX_BUILD_CORES -0 nerd-font-patcher -c {}
+              unpackPhase = ''
+                undmg $src
+                7z x '${pkgName}'
+                7z x 'Payload~'
               '';
 
-              installPhase =
-                commonInstall
-                + ''
-                  find -name \*.otf -maxdepth 1 -exec mv {} $out/share/fonts/opentype/ \;
-                  find -name \*.ttf -maxdepth 1 -exec mv {} $out/share/fonts/truetype/ \;
-                '';
+              buildInputs = [pkgs.p7zip pkgs.undmg];
+              setSourceRoot = "sourceRoot=`pwd`";
+
+              installPhase = ''
+                mkdir -p $out/share/fonts
+                mkdir -p $out/share/fonts/opentype
+                mkdir -p $out/share/fonts/truetype
+                find -name \*.otf -exec mv {} $out/share/fonts/opentype/ \;
+                find -name \*.ttf -exec mv {} $out/share/fonts/truetype/ \;
+              '';
             };
         in {
           sf-pro = makeAppleFont "sf-pro" "SF Pro Fonts.pkg" (pkgs.fetchurl sf-pro-src);
-          sf-pro-nerd = makeNerdAppleFont "sf-pro-nerd" "SF Pro Fonts.pkg" (pkgs.fetchurl sf-pro-src);
-
           sf-compact = makeAppleFont "sf-compact" "SF Compact Fonts.pkg" (pkgs.fetchurl sf-compact-src);
-          sf-compact-nerd = makeNerdAppleFont "sf-compact-nerd" "SF Compact Fonts.pkg" (pkgs.fetchurl sf-compact-src);
-
           sf-mono = makeAppleFont "sf-mono" "SF Mono Fonts.pkg" (pkgs.fetchurl sf-mono-src);
-          sf-mono-nerd = makeNerdAppleFont "sf-mono-nerd" "SF Mono Fonts.pkg" (pkgs.fetchurl sf-mono-src);
-
           sf-arabic = makeAppleFont "sf-arabic" "SF Arabic Fonts.pkg" (pkgs.fetchurl sf-arabic-src);
-          sf-arabic-nerd = makeNerdAppleFont "sf-arabic-nerd" "SF Arabic Fonts.pkg" (pkgs.fetchurl sf-arabic-src);
-
           ny = makeAppleFont "ny" "NY Fonts.pkg" (pkgs.fetchurl ny-src);
-          ny-nerd = makeNerdAppleFont "ny-nerd" "NY Fonts.pkg" (pkgs.fetchurl ny-src);
         };
       };
     };
