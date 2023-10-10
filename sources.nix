@@ -1,11 +1,11 @@
 {
   sf-pro = {
     url = "https://devimages-cdn.apple.com/design/resources/download/SF-Pro.dmg";
-    hash = "sha256-XoTegyl5BTBPHrKfaxJ18U2mzzxqCXLS9yUtN0hcB7I=";
+    hash = "sha256-nkuHge3/Vy8lwYx9z+pvsQZfzrNIP4K0OutpPl4yXn0=";
   };
   sf-compact = {
     url = "https://devimages-cdn.apple.com/design/resources/download/SF-Compact.dmg";
-    hash = "sha256-7mk4i36CWPy08RdNTuFyahL3gb6HL7wwjWS9Zs1LH6s=";
+    hash = "sha256-+Q4HInJBl3FLb29/x9utf7A55uh5r79eh/7hdQDdbSI=";
   };
   sf-mono = {
     url = "https://devimages-cdn.apple.com/design/resources/download/SF-Mono.dmg";
